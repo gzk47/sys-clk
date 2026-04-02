@@ -38,8 +38,9 @@ include ${TOPDIR}/lib/libultrahand/ultrahand.mk
 #---------------------------------------------------------------------------------
 #TARGET_VERSION	:= $(shell git describe --dirty --always --tags)
 APP_VERSION		:= 2.0.1+r23
-APP_VERSION		:= v$(APP_VERSION)-$(shell git rev-parse --short=7 HEAD)
 TARGET_VERSION := $(APP_VERSION)
+APP_VERSION		:= v$(APP_VERSION)-$(shell git rev-parse --short=7 HEAD)
+#Set after TARGET_VERSION, no overwrite.
 
 #---------------------------------------------------------------------------------
 # options for code generation
