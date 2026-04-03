@@ -42,15 +42,18 @@ jobs:
           chmod +x build.sh
           ./build.sh
 
+          mkdir -p dist/config/sys-clk
+          cp -rf overlay/lang dist/config/sys-clk/
+
           cd dist
           rm -f README.md
           zip -r ../sys-clk.zip ./*
           # zip -r ../sys-clk.zip ./* -x "README.md"
           cd ..
 
-          cd overlay
-          zip -r ../lang.zip lang/
-          cd ..
+          cd overlay/lang
+          zip -r ../../lang.zip ./*.json
+          cd ../..
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
