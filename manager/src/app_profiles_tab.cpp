@@ -34,13 +34,24 @@
 #ifdef __SWITCH__
 #include <zlib.h>
 
+typedef struct {
+    u16 size;
+    u8 data[0x2FFE];
+    u8 _unusedA[0x215];
+    u8 titlesDataFormat;
+    u8 _unusedB[0xDEA];
+} NacpExCompressed;
+
+static_assert(sizeof(NacpStruct) == sizeof(NacpExCompressed), "size mismatch");
+
 static bool _nacpConvertTitleData(NacpStruct* nacp) {
-    if(nacp->titles_data_format == 0) {
+    NacpExCompressed* compressed = (NacpExCompressed*)(nacp);
+    if(compressed->titlesDataFormat == 0) {
         return true;
     }
 
-    if(nacp->titles_data_format != 1) {
-        brls::Logger::error("unexpected title data format: %u", nacp->titles_data_format);
+    if(compressed->titlesDataFormat != 1) {
+        brls::Logger::error("unexpected title data format: %d", compressed->titlesDataFormat);
         return false;
     }
 
@@ -48,8 +59,8 @@ static bool _nacpConvertTitleData(NacpStruct* nacp) {
     z_stream stream = {};
     stream.avail_out = sizeof(tmp);
     stream.next_out = (Bytef*)tmp;
-    stream.avail_in = nacp->lang_data.compressed_data.buffer_size;
-    stream.next_in = nacp->lang_data.compressed_data.buffer;
+    stream.avail_in = compressed->size;
+    stream.next_in = compressed->data;
 
     int ret = inflateInit2(&stream, -15);
     if(ret != Z_OK) {
@@ -65,8 +76,8 @@ static bool _nacpConvertTitleData(NacpStruct* nacp) {
         return false;
     }
 
-    nacp->titles_data_format = 0;
-    memcpy(nacp->lang_data.lang, tmp, sizeof(nacp->lang_data.lang));
+    compressed->titlesDataFormat = 0;
+    memcpy(nacp->lang, tmp, sizeof(nacp->lang));
     return true;
 }
 #else
@@ -79,7 +90,7 @@ static bool _nacpConvertTitleData(NacpStruct* nacp) {
 AppProfilesTab::AppProfilesTab()
 {
     // Filter toggle
-    this->filterListItem = new brls::ToggleListItem("显示未配置的应用程序", this->showEmptyProfiles, "", "是", "否");
+    this->filterListItem = new brls::ToggleListItem("显示未配置的应用程序", this->showEmptyProfiles, "", "\uE14B", "\uE14C");
     filterListItem->getClickEvent()->subscribe([this](View* v)
     {
         this->refreshFilter();
