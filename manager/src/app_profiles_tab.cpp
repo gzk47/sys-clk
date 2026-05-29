@@ -79,7 +79,7 @@ static bool _nacpConvertTitleData(NacpStruct* nacp) {
 AppProfilesTab::AppProfilesTab()
 {
     // Filter toggle
-    this->filterListItem = new brls::ToggleListItem("Show applications with no profile", this->showEmptyProfiles, "", "Yes", "No");
+    this->filterListItem = new brls::ToggleListItem("显示未配置的应用程序", this->showEmptyProfiles, "", "是", "否");
     filterListItem->getClickEvent()->subscribe([this](View* v)
     {
         this->refreshFilter();
@@ -204,12 +204,12 @@ void AppProfilesTab::updateEmptyListLabel(bool animate)
 {
     if (this->items.empty())
     {
-        this->emptyListLabel->setText("\uE140  You don't have any application installed on your Nintendo Switch.");
+        this->emptyListLabel->setText("\uE140  没有安装任何应用程序。");
         this->emptyListLabel->show([](){}, animate);
     }
     else if (!this->showEmptyProfiles && this->profilesItems.empty())
     {
-        this->emptyListLabel->setText("\uE140  You don't have any application with a defined profile at the moment.");
+        this->emptyListLabel->setText("\uE140  没有已配置的应用程序。");
         this->emptyListLabel->show([](){}, animate);
     }
     else

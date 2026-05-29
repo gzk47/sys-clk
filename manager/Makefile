@@ -44,7 +44,7 @@ RESOURCES	:=	resources
 DATA		:=	data
 INCLUDES	:=	../common/include
 APP_TITLE	:=	sys-clk manager
-APP_AUTHOR	:=	RetroNX Team
+APP_AUTHOR	:=	RetroNX Team, gzk_47
 
 ROMFS				:=	$(BUILD)/romfs
 BOREALIS_PATH		:=	lib/borealis
