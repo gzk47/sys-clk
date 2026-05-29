@@ -1,0 +1,71 @@
+name: Build
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    container: devkitpro/devkita64:latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Add safe.directory Update libnx
+        run: |
+          git config --global --add safe.directory "*"
+          # git clone --recurse-submodules https://github.com/switchbrew/libnx.git
+          # cd libnx
+          # make -j$(nproc) install
+
+      - name: Checkout latest code
+        uses: actions/checkout@v6
+        with:
+          clean: true
+          fetch-depth: 0
+          fetch-tags: true
+          submodules: recursive
+
+      - name: Extract version
+        run: |
+          APP_NAME="sys-clk"
+          VER_FILE="overlay/Makefile"
+          KEY="APP_VERSION"
+
+          VERSION="$(grep -F "$KEY" "$VER_FILE" | head -1 | sed 's/.*=//g; s/[ \t$()]//g')"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+          echo "TAG_NAME=v${VERSION}-${SHORT_HASH}" >> "$GITHUB_ENV"
+          echo "RELEASE_NAME=${APP_NAME} v${VERSION} (${SHORT_HASH})" >> "$GITHUB_ENV"
+
+      - name: build
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+          mkdir -p dist/config/sys-clk
+          cp -rf overlay/lang dist/config/sys-clk/
+
+          cd dist
+          rm -f README.md
+          zip -r ../sys-clk.zip ./*
+          # zip -r ../sys-clk.zip ./* -x "README.md"
+          cd ..
+
+          cd overlay/lang
+          zip -r ../../lang.zip ./*.json
+          cd ../..
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          make_latest: true
+          files: |
+            sys-clk.zip
+            lang.zip
+            manager/sys-clk-manager.nro
+            overlay/out/sys-clk-overlay.ovl
