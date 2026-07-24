@@ -37,7 +37,7 @@ include ${TOPDIR}/lib/libultrahand/ultrahand.mk
 # version control constants
 #---------------------------------------------------------------------------------
 #TARGET_VERSION	:= $(shell git describe --dirty --always --tags)
-APP_VERSION		:= 2.0.1+r27
+APP_VERSION		:= 2.0.1+r28
 TARGET_VERSION := $(APP_VERSION)
 APP_VERSION		:= v$(APP_VERSION)-$(shell git rev-parse --short=7 HEAD)
 
@@ -68,7 +68,7 @@ LDFLAGS += -Wl,-wrap,__cxa_throw \
            -Wl,-wrap,__gxx_personality_v0
 
 
-CXXFLAGS	:= $(CFLAGS) -fno-exceptions -std=c++26 -Wno-dangling-else -ffast-math
+CXXFLAGS	:= $(CFLAGS) -fno-exceptions -std=c++23 -Wno-dangling-else -ffast-math
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	+=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
